@@ -6,7 +6,6 @@ public class UniverseController {
     private Universe universe;
     private UniverseView universeView;
     private GameOfLife gameOfLife;
-    public int numberOfGenerations = 50; //make possible to be changed in the interface
 
     public UniverseController(Universe universe, UniverseView universeView, GameOfLife gameOfLife) {
         this.universe = universe;
@@ -15,12 +14,7 @@ public class UniverseController {
     }
 
     public void advanceGeneration() {
-//        for (int i = 0; i < numberOfGenerations; i++) {
-//            universe.nextGeneration();
-//            updateView();
-//        }
         while (true) {
-//            System.out.println("In the while loop");
             switch (gameOfLife.state) {
                 case RUNNING:
                     universe.nextGeneration();
@@ -28,29 +22,25 @@ public class UniverseController {
                     break;
                 case PAUSED:
                     break;
+                case RESET:
+                    gameOfLife.state = State.RUNNING;
+                    universe = new Universe(gameOfLife.universeSize);
+                    break;
             }
         }
     }
 
     public void updateView() {
         try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ignored) {}
-        gameOfLife.GenerationLabel.setText("Generation #" + universe.countGeneration);
-        gameOfLife.AliveLabel.setText("Alive: " + universe.countAlive);
+            System.out.println("Current speed is " + gameOfLife.speed);
+            Thread.sleep(1000 / gameOfLife.speed);
+        } catch (InterruptedException ignored) {
+        }
+        gameOfLife.generationLabel.setText("Generation #" + universe.countGeneration);
+        gameOfLife.aliveLabel.setText("Alive: " + universe.countAlive);
+        gameOfLife.speedLabel.setText("Speed: " + gameOfLife.speed);
         gameOfLife.gameBoard.draw(universe);
         universe.countGeneration++;
         universe.countAlive = 0;
-    }
-
-    private void clearOutputScreen() {
-        try {
-            if (System.getProperty("os.name").contains("Windows")) {
-                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-            } else {
-                Runtime.getRuntime().exec("clear");
-            }
-        }
-        catch (IOException | InterruptedException ignored) {}
     }
 }

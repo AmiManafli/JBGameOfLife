@@ -1,24 +1,25 @@
 package life;
 
 import javax.swing.*;
-import javax.swing.border.Border;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 enum State {
-    RUNNING, PAUSED,
+    RUNNING, PAUSED, RESET,
 }
-
 
 public class GameOfLife extends JFrame {
     GameBoard gameBoard;
-    JLabel GenerationLabel;
-    JLabel AliveLabel;
+    JLabel generationLabel;
+    JLabel aliveLabel;
+    JLabel speedLabel;
     int cellSize = 20;
-    boolean paused = false;
     volatile State state = State.RUNNING;
     volatile int speed = 1;
+    volatile int universeSize = 20;
 
     public GameOfLife() {
         super("Game of Life");
@@ -26,16 +27,16 @@ public class GameOfLife extends JFrame {
         setLayout(new BorderLayout());
 
         JPanel gamePanel = new JPanel();
-        gamePanel.setPreferredSize(new Dimension(410, 440));
+        gamePanel.setMinimumSize(new Dimension(100, 100));
+        gamePanel.setPreferredSize(new Dimension(500, 500));
+        gamePanel.setMaximumSize(new Dimension(1000, 1000));
+
         gamePanel.setLayout(new BoxLayout(gamePanel, BoxLayout.Y_AXIS));
 
         JPanel controlPanel = new JPanel();
         createControlPanel(controlPanel);
-//        controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.Y_AXIS));
-
 
         gameBoard = new GameBoard(cellSize);
-
 
         gamePanel.add(gameBoard);
 
@@ -52,44 +53,46 @@ public class GameOfLife extends JFrame {
         layout.setAutoCreateGaps(true);
         layout.setAutoCreateContainerGaps(true);
 
+        generationLabel = new JLabel();
+        generationLabel.setName("GenerationLabel");
+        generationLabel.setText("Generation #0");
 
-        //horizontal: pause button (parallel group left {the rest}), reset button
-        //vertical: parallel group{buttons}, generation label, alive label, speed label, slider
-
-        GenerationLabel = new JLabel();
-        GenerationLabel.setName("GenerationLabel");
-        GenerationLabel.setText("Generation #0");
-
-        AliveLabel = new JLabel();
-        AliveLabel.setName("AliveLabel");
-        AliveLabel.setText("Alive: 0");
+        aliveLabel = new JLabel();
+        aliveLabel.setName("AliveLabel");
+        aliveLabel.setText("Alive: 0");
 
         JToggleButton pauseButton = new JToggleButton("Pause/Resume");
         pauseButton.setName("PlayToggleButton");
-        pauseButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                switch (state) {
-                    case PAUSED:
-                        state = State.RUNNING;
-                        break;
-                    case RUNNING:
-                        state = State.PAUSED;
-                        break;
-                }
+        pauseButton.addActionListener(actionEvent -> {
+            switch (state) {
+                case PAUSED:
+                    state = State.RUNNING;
+                    break;
+                case RUNNING:
+                    state = State.PAUSED;
+                    break;
             }
         });
+
+        JLabel setSizeLabel = new JLabel();
+        setSizeLabel.setText("Universe Size: ");
+
+        JTextField setSizeField = new JTextField();
+        setSizeField.setText("20");
+        setSizeField.setSize(new Dimension(10, 20));
+
 
         JButton resetButton = new JButton("Reset");
         resetButton.setName("ResetButton");
-        resetButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-
+        resetButton.addActionListener(actionEvent -> {
+            try {
+                universeSize = Integer.parseInt(setSizeField.getText());
+            } catch (NumberFormatException ignored) {
             }
+            state = State.RESET;
         });
 
-        JLabel speedLabel = new JLabel();
+        speedLabel = new JLabel();
         speedLabel.setName("SpeedLabel");
         speedLabel.setText("Speed: " + speed);
 
@@ -98,29 +101,33 @@ public class GameOfLife extends JFrame {
         speedSlider.setMajorTickSpacing(2);
         speedSlider.setPaintTicks(true);
         speedSlider.setPaintLabels(true);
+        speedSlider.addChangeListener(changeEvent -> speed = speedSlider.getValue());
 
-
+        JPanel setParamsPanel = new JPanel();
+        setParamsPanel.setLayout(new BoxLayout(setParamsPanel, BoxLayout.X_AXIS));
+        setParamsPanel.add(setSizeLabel);
+        setParamsPanel.add(setSizeField);
+        setParamsPanel.add(resetButton);
 
         layout.setHorizontalGroup(
                 layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                                 .addComponent(pauseButton)
-                                .addComponent(GenerationLabel)
-                                .addComponent(AliveLabel)
+                                .addComponent(generationLabel)
+                                .addComponent(aliveLabel)
                                 .addComponent(speedLabel)
-                                .addComponent(speedSlider))
-                        .addComponent(resetButton)
+                                .addComponent(speedSlider)
+                                .addComponent(setParamsPanel))
         );
         layout.setVerticalGroup(
                 layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                .addComponent(pauseButton)
-                                .addComponent(resetButton))
-                        .addComponent(GenerationLabel)
-                        .addComponent(AliveLabel)
+                                .addComponent(pauseButton))
+                        .addComponent(generationLabel)
+                        .addComponent(aliveLabel)
                         .addComponent(speedLabel)
                         .addComponent(speedSlider)
+                        .addComponent(setParamsPanel, 20, 30, 30)
         );
     }
-
 }

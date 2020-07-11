@@ -9,8 +9,9 @@ public class Universe {
     public char[][] map;
     public int countAlive = 0;
     public int countGeneration = 0;
+    private Random random = new Random();
 
-    public Universe(Random random, int universeSize) {
+    public Universe(int universeSize) {
         this.size = universeSize;
         this.map = new char[universeSize][universeSize];
         for (int i = 0; i < universeSize; i++) {
@@ -23,6 +24,7 @@ public class Universe {
             }
         }
     }
+
 
     public void nextGeneration() {
         var newGen = new char[size][size];
