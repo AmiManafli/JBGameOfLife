@@ -47,6 +47,7 @@ public class GameOfLife extends JFrame {
 
     private void createControlPanel(JPanel controlPanel) {
         GroupLayout layout = new GroupLayout(controlPanel);
+        controlPanel.setLayout(layout);
 
         layout.setAutoCreateGaps(true);
         layout.setAutoCreateContainerGaps(true);
@@ -88,7 +89,9 @@ public class GameOfLife extends JFrame {
             }
         });
 
-        JLabel speedLabel = new JLabel("Speed: " + speed + " generation/sec");
+        JLabel speedLabel = new JLabel();
+        speedLabel.setName("SpeedLabel");
+        speedLabel.setText("Speed: " + speed);
 
         JSlider speedSlider = new JSlider(JSlider.HORIZONTAL, 1, 10, 1);
         speedSlider.setMinorTickSpacing(1);
@@ -97,12 +100,27 @@ public class GameOfLife extends JFrame {
         speedSlider.setPaintLabels(true);
 
 
-        controlPanel.add(pauseButton);
-        controlPanel.add(resetButton);
-        controlPanel.add(GenerationLabel);
-        controlPanel.add(AliveLabel);
-        controlPanel.add(speedLabel);
-        controlPanel.add(speedSlider);
+
+        layout.setHorizontalGroup(
+                layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                .addComponent(pauseButton)
+                                .addComponent(GenerationLabel)
+                                .addComponent(AliveLabel)
+                                .addComponent(speedLabel)
+                                .addComponent(speedSlider))
+                        .addComponent(resetButton)
+        );
+        layout.setVerticalGroup(
+                layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                .addComponent(pauseButton)
+                                .addComponent(resetButton))
+                        .addComponent(GenerationLabel)
+                        .addComponent(AliveLabel)
+                        .addComponent(speedLabel)
+                        .addComponent(speedSlider)
+        );
     }
 
 }
