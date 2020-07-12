@@ -17,7 +17,7 @@ public class GameOfLife extends JFrame {
     JLabel aliveLabel;
     JLabel speedLabel;
     int cellSize = 20;
-    volatile State state = State.RUNNING;
+    volatile State state = State.PAUSED;
     volatile int speed = 1;
     volatile int universeSize = 20;
 
@@ -26,18 +26,16 @@ public class GameOfLife extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
+        JPanel controlPanel = new JPanel();
+        createControlPanel(controlPanel);
+
         JPanel gamePanel = new JPanel();
         gamePanel.setMinimumSize(new Dimension(100, 100));
         gamePanel.setPreferredSize(new Dimension(500, 500));
         gamePanel.setMaximumSize(new Dimension(1000, 1000));
-
         gamePanel.setLayout(new BoxLayout(gamePanel, BoxLayout.Y_AXIS));
 
-        JPanel controlPanel = new JPanel();
-        createControlPanel(controlPanel);
-
         gameBoard = new GameBoard(cellSize);
-
         gamePanel.add(gameBoard);
 
         getContentPane().add(controlPanel, BorderLayout.WEST);

@@ -32,7 +32,6 @@ public class UniverseController {
 
     public void updateView() {
         try {
-            System.out.println("Current speed is " + gameOfLife.speed);
             Thread.sleep(1000 / gameOfLife.speed);
         } catch (InterruptedException ignored) {
         }
